@@ -1,0 +1,133 @@
+{
+  "name": "root-tbrowser",
+  "displayName": "ROOT TBrowser",
+  "description": "在本地预览 CERN ROOT 文件，配色与 TBrowser 一致。Remote SSH 时只需装在本机，不必在服务器安装。",
+  "version": "0.1.3",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": true,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "activationEvents": [
+    "onCustomEditor:rootTbrowser.file"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "rootTbrowser.file",
+        "displayName": "ROOT TBrowser",
+        "selector": [
+          {
+            "filenamePattern": "*.root"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "rootTbrowser.open",
+        "title": "用 ROOT TBrowser 打开",
+        "category": "ROOT"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "rootTbrowser.open",
+          "when": "resourceExtname == .root",
+          "group": "navigation"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "rootTbrowser.open",
+          "when": "resourceExtname == .root",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "ROOT TBrowser",
+      "properties": {
+        "rootTbrowser.guiBackground": {
+          "type": "string",
+          "default": "#E6E6FA",
+          "markdownDescription": "浏览器窗口背景，对应 ROOT 的 `Gui.BackgroundColor`。经典 TBrowser 是 `#E6E6FA`，较新的 ROOT 是 `#e8e8e8`。画布本身保持 ROOT Modern 的白色。"
+        },
+        "rootTbrowser.layout": {
+          "type": "string",
+          "default": "simple",
+          "enum": [
+            "simple",
+            "tabs",
+            "flex",
+            "vert2",
+            "horiz2",
+            "grid 2x2"
+          ],
+          "markdownDescription": "右侧绘图区布局。`simple` 最接近 TBrowser：左侧目录，右侧一块画布。"
+        },
+        "rootTbrowser.palette": {
+          "type": "integer",
+          "default": 57,
+          "minimum": 1,
+          "maximum": 113,
+          "markdownDescription": "默认调色板。57 是 ROOT 6 的 kBird，也是当前 TBrowser 里 `colz` 的默认调色板。对象自己保存的颜色不会被覆盖。"
+        },
+        "rootTbrowser.onlyLastCycle": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "只显示每个对象的最新 cycle，与 TBrowser 相同。"
+        },
+        "rootTbrowser.remoteRead": {
+          "type": "string",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "ssh",
+            "download"
+          ],
+          "markdownDescription": "读取 Remote SSH 上的 ROOT 文件的方式。`auto`：优先用本机 SSH 按字节区间读取（不把整个文件拉下来，服务器也不装扩展）；SSH 不可用时，再经已经连上的 VS Code 远程连接把文件缓存到本机。`ssh` 只走区间读取。`download` 总是整文件缓存到本机。"
+        },
+        "rootTbrowser.maxDownloadMB": {
+          "type": "number",
+          "default": 1024,
+          "minimum": 1,
+          "markdownDescription": "整文件缓存模式的大小上限（MB）。SSH 区间读取不受这个限制。"
+        },
+        "rootTbrowser.sshPath": {
+          "type": "string",
+          "default": "ssh",
+          "markdownDescription": "本机 SSH 客户端。Windows 一般是 `ssh` 或 `C:\\\\Windows\\\\System32\\\\OpenSSH\\\\ssh.exe`。"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vendor": "node scripts/copy-jsroot.mjs",
+    "postinstall": "node scripts/copy-jsroot.mjs",
+    "compile": "tsc -p .",
+    "watch": "tsc -w -p .",
+    "test": "npm run compile && node dist/test/verify.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.85.0",
+    "jsroot": "7.11.0",
+    "typescript": "^5.6.3"
+  }
+}
