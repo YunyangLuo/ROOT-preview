@@ -1,5 +1,7 @@
 # ROOT TBrowser
 
+这是一个完全由AI编写的项目。
+
 在 VS Code / Cursor 里直接预览 CERN ROOT 文件（`.root`）。左侧是对象目录，右侧画直方图、画布和几何体。窗口配色按 ROOT TBrowser：经典浅紫背景 `#E6E6FA`，黑色文字，白色画布，对象自己的填充色和 ROOT 6 的 kBird 调色板保持不变。
 
 图形由 [JSROOT](https://root.cern/js/) 在本机绘制，不需要本机或服务器安装 ROOT。
